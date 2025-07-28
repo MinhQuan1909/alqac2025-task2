@@ -58,7 +58,6 @@ Hãy đưa ra câu trả lời theo format sau:
 ```
 
 
-
 ### 2. Model Training
 
 With the augmented dataset of 728 samples, we proceeded with a two-phase training strategy.
