@@ -2,6 +2,8 @@
 
 This project details the process of developing and training a language model to answer legal questions across three formats: True/False, Multiple-choice, and Free-text. The core of our approach is to enable the model to generate a detailed, step-by-step reasoning process (Chain-of-Thought) before providing a final answer.
 
+Paper link: [Hallucineers@ALQAC 2025: Unified LLM Pipelines for Legal Document Filtering and Question Answering](https://ieeexplore.ieee.org/document/11309391)
+
 ## Methodology
 
 Our workflow is divided into three main stages: Data Augmentation, Model Training (SFT and GPRO), and Ensemble for Submission.
@@ -17,7 +19,7 @@ The initial dataset provided by the organizers contained questions and correspon
 
 This prompt was used to guide the DeepSeek model in generating the detailed reasoning.
 
-```  
+```
 Kết luận cuối cùng sau khi suy luận đã có, hãy phân tích để giải thích cho kết luận: 'Đúng' với câu hỏi dạng Đúng/Sai.
 
 Dựa vào bối cảnh bên dưới, hãy phân tích kỹ trước khi trả lời câu hỏi.
@@ -57,7 +59,6 @@ Hãy đưa ra câu trả lời theo format sau:
 4. Kết luận: Đúng  
 ```
 
-
 ### 2. Model Training
 
 With the augmented dataset of 728 samples, we proceeded with a two-phase training strategy.
@@ -90,7 +91,7 @@ After SFT, we took the `qwen_14e` model and performed further training using GPR
 
 The following prompt structure was used during training and inference. The model is required to generate its reasoning within the `<think>`...`</think>` tags before outputting the final, concise answer.
 
-```  
+```
 Dựa vào bối cảnh bên dưới, hãy phân tích kỹ trước khi trả lời câu hỏi.
 
 Loại câu hỏi: Đúng/Sai (format của Kết luận cuối cùng sau khi suy luận là 1 trong 2 kết luận: 'Đúng', 'Sai'. Không được giải thích gì thêm.)
@@ -134,15 +135,12 @@ Không được trả lời ngay mà phải suy luận đầy đủ trước tro
 [Kết luận cuối cùng sau khi suy luận]  
 ```
 
-
 ### 3. Submission Strategies (Ensemble)
 
 To maximize performance, we used ensemble methods combining the outputs of our trained models.
 
 - **Submission 1:** Combined the answers from two SFT models: `qwen_3e` and `qwen_14e`.
-
 - **Submission 2:** An ensemble of the **three GPRO-trained models** using a voting mechanism to determine the final answer.
-
 - **Submission 3:** An ensemble combining the **three GPRO models and the `qwen_14e` SFT model** (total of 4 models), also using a voting mechanism.
 
 ### 4. How to Run
@@ -152,23 +150,21 @@ Follow these steps to reproduce the results.
 - **Data Preparation (Generating the "think" component):**
   To augment the dataset with the reasoning part, run the notebook:
   `alqac-gen-data-train.ipynb`
-
 - **SFT Training:**
   To perform Supervised Fine-Tuning (SFT) on the full dataset, run:
   `alqac-train-data-train-qwen-fulldata.ipynb`
-
 - **GPRO Training:**
   To train the model using GPRO with the three different configurations, run these notebooks:
+
   - `alqac-train-grpo-config1.ipynb`
   - `alqac-train-grpo-config2.ipynb`
   - `alqac-train-grpo-config3.ipynb`
-
 - **Inference:**
+
   - To perform inference on the test set using the SFT model, run:
     `alqac-inference-test-qwen-fulldata.ipynb`
   - To perform inference on the test set using the GPRO models, run:
     `alqac-inference-test-qwen-grpo-fulldata.ipynb`
-
 - **Generate Submission Files:**
   To create the three final submission files by ensembling the model outputs, run:
   `submit.ipynb`
